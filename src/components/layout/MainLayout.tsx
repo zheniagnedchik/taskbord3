@@ -25,7 +25,12 @@ export function MainLayout() {
                 className={({ isActive }) =>
                   cn(
                     buttonVariants({ variant: 'ghost', size: 'sm' }),
-                    isActive && 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground',
+                    to === '/dashboard'
+                      ? isActive
+                        ? 'bg-green-600 text-white hover:bg-green-700 hover:text-white dark:bg-green-600 dark:text-white dark:hover:bg-green-700'
+                        : 'text-green-700 hover:bg-green-500/15 hover:text-green-800 dark:text-green-400 dark:hover:bg-green-500/20 dark:hover:text-green-300'
+                      : isActive &&
+                          'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground',
                   )
                 }
               >
