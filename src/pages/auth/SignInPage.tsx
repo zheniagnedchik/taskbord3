@@ -1,5 +1,16 @@
-import { PlaceholderPage } from '@/components/shared/PlaceholderPage'
+import { useLayoutEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { useAuthModal } from '@/stores/auth-modal'
 
 export function SignInPage() {
-  return <PlaceholderPage title="Sign in" description="Authentication UI will live here." />
+  const navigate = useNavigate()
+  const openSignIn = useAuthModal((s) => s.openSignIn)
+
+  useLayoutEffect(() => {
+    openSignIn()
+    navigate('/dashboard', { replace: true })
+  }, [navigate, openSignIn])
+
+  return null
 }

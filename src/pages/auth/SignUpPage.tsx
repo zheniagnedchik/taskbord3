@@ -1,5 +1,16 @@
-import { PlaceholderPage } from '@/components/shared/PlaceholderPage'
+import { useLayoutEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { useAuthModal } from '@/stores/auth-modal'
 
 export function SignUpPage() {
-  return <PlaceholderPage title="Sign up" description="Registration UI will live here." />
+  const navigate = useNavigate()
+  const openSignUp = useAuthModal((s) => s.openSignUp)
+
+  useLayoutEffect(() => {
+    openSignUp()
+    navigate('/dashboard', { replace: true })
+  }, [navigate, openSignUp])
+
+  return null
 }

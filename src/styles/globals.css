@@ -83,25 +83,26 @@
     --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+/* Specificity beats :root tokens when class is on html */
+html.dark {
+    --background: #060606;
+    --foreground: #ffffff;
+    --card: #0c0c0f;
+    --card-foreground: #ffffff;
+    --popover: #111116;
+    --popover-foreground: #ffffff;
+    --primary: #8b5cf6;
+    --primary-foreground: #fafafa;
+    --secondary: #14141a;
+    --secondary-foreground: #f4f4f5;
+    --muted: #16161d;
+    --muted-foreground: #9ca3af;
+    --accent: rgb(139 92 246 / 0.12);
+    --accent-foreground: #ffffff;
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    --border: rgb(255 255 255 / 0.08);
+    --input: rgb(255 255 255 / 0.09);
+    --ring: #22d3ee;
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -115,16 +116,44 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    --brand-from: #a855f7;
+    --brand-to: #22d3ee;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
-    }
+  html.dark body {
+    @apply bg-background text-foreground antialiased;
+    background-color: #060606;
+    background-image:
+      radial-gradient(
+        ellipse 120% 95% at 4% -6%,
+        rgb(147 51 234 / 0.28),
+        transparent 52%
+      ),
+      radial-gradient(
+        ellipse 100% 80% at 98% -2%,
+        rgb(34 211 238 / 0.14),
+        transparent 45%
+      ),
+      radial-gradient(
+        ellipse 55% 40% at 78% 18%,
+        rgb(59 130 246 / 0.08),
+        transparent 50%
+      );
+    background-attachment: fixed;
+  }
   html {
     @apply font-sans;
     }
+}
+
+@utility text-gradient-brand {
+  background-image: linear-gradient(to right, var(--brand-from), var(--brand-to));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
