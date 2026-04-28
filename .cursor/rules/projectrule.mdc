@@ -1,0 +1,107 @@
+---
+alwaysApply: true
+---
+
+# Cursor Rules — Frontend
+
+## Frontend Stack
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui
+- lucide-react
+- dnd-kit
+- TanStack Query
+- Zustand
+- React Hook Form
+- Zod
+- Supabase JS Client
+
+## Folder Structure
+
+```txt
+src/
+  app/
+    App.tsx
+    router.tsx
+    providers.tsx
+
+  pages/
+    auth/
+      SignInPage.tsx
+      SignUpPage.tsx
+    dashboard/
+      DashboardPage.tsx
+    board/
+      BoardPage.tsx
+    settings/
+      SettingsPage.tsx
+
+  components/
+    ui/
+    layout/
+    shared/
+
+  features/
+    auth/
+      components/
+      hooks/
+      api/
+      types.ts
+
+    boards/
+      components/
+      hooks/
+      api/
+      types.ts
+
+    columns/
+      components/
+      hooks/
+      api/
+      types.ts
+
+    tasks/
+      components/
+      hooks/
+      api/
+      types.ts
+
+    subtasks/
+      components/
+      hooks/
+      api/
+      types.ts
+
+    ai/
+      components/
+      hooks/
+      api/
+      types.ts
+
+    telegram/
+      components/
+      hooks/
+      api/
+      types.ts
+
+  lib/
+    supabase/
+      client.ts
+    api/
+      worker-client.ts
+    validations/
+    utils/
+
+  hooks/
+
+  stores/
+
+  types/
+
+  styles/
+    globals.css
+
+public/
