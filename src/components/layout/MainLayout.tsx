@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
 import { AuthDialog } from '@/features/auth/components/AuthDialog'
+import { BoardsSidebar } from '@/features/boards/components/BoardsSidebar'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
@@ -95,9 +96,14 @@ export function MainLayout() {
           </nav>
         </div>
       </header>
-      <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 py-10 md:py-12">
-        <Outlet />
-      </main>
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        {!initializing && user ? <BoardsSidebar /> : null}
+        <main className="relative min-w-0 flex-1 px-4 py-10 md:py-12">
+          <div className="mx-auto w-full max-w-6xl">
+            <Outlet />
+          </div>
+        </main>
+      </div>
       <AuthDialog />
     </div>
   )
