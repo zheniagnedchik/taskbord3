@@ -2,8 +2,10 @@ import { NavLink, Outlet } from 'react-router-dom'
 
 import { AuthDialog } from '@/features/auth/components/AuthDialog'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { supabase } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import { useAuthModal } from '@/stores/auth-modal'
+import { useAuthSession } from '@/stores/auth-session'
 
 const navLinks = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -14,9 +16,16 @@ const navLinks = [
 const ghostNavButtonClass =
   'text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground'
 
+function shortEmail(email: string) {
+  if (email.length <= 28) return email
+  return `${email.slice(0, 14)}…${email.slice(-10)}`
+}
+
 export function MainLayout() {
   const openSignIn = useAuthModal((s) => s.openSignIn)
   const openSignUp = useAuthModal((s) => s.openSignUp)
+  const user = useAuthSession((s) => s.user)
+  const initializing = useAuthSession((s) => s.initializing)
 
   return (
     <div className="relative flex min-h-screen flex-col text-foreground">
@@ -42,24 +51,47 @@ export function MainLayout() {
                 {label}
               </NavLink>
             ))}
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className={ghostNavButtonClass}
-              onClick={() => openSignIn()}
-            >
-              Sign in
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className={ghostNavButtonClass}
-              onClick={() => openSignUp()}
-            >
-              Sign up
-            </Button>
+            {!initializing && user ? (
+              <>
+                <span
+                  className="flex max-w-[200px] items-center truncate px-2 text-sm text-muted-foreground"
+                  title={user.email ?? undefined}
+                >
+                  {user.email ? shortEmail(user.email) : 'Signed in'}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className={ghostNavButtonClass}
+                  onClick={() => void supabase.auth.signOut()}
+                >
+                  Sign out
+                </Button>
+              </>
+            ) : null}
+            {!initializing && !user ? (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className={ghostNavButtonClass}
+                  onClick={() => openSignIn()}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className={ghostNavButtonClass}
+                  onClick={() => openSignUp()}
+                >
+                  Sign up
+                </Button>
+              </>
+            ) : null}
           </nav>
         </div>
       </header>

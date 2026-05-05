@@ -30,22 +30,37 @@ function GoogleMark({ className }: { className?: string }) {
 }
 
 type GoogleAuthButtonProps = {
-  onContinue: () => void
+  onContinue?: () => void
+  disabled?: boolean
+  loading?: boolean
+  title?: string
   /** Screen reader label; visible text stays "Continue with Google". */
   'aria-label'?: string
 }
 
-export function GoogleAuthButton({ onContinue, 'aria-label': ariaLabel }: GoogleAuthButtonProps) {
+export function GoogleAuthButton({
+  onContinue,
+  disabled,
+  loading,
+  title,
+  'aria-label': ariaLabel,
+}: GoogleAuthButtonProps) {
+  const busy = loading || disabled
   return (
     <Button
       type="button"
       variant="outline"
       className="w-full gap-2 border-border bg-background text-foreground hover:bg-muted/80 dark:bg-input/30 dark:hover:bg-input/50"
-      onClick={onContinue}
+      disabled={busy}
+      title={title}
+      onClick={() => {
+        if (!busy) onContinue?.()
+      }}
       aria-label={ariaLabel ?? 'Continue with Google'}
+      aria-busy={loading}
     >
       <GoogleMark />
-      Continue with Google
+      {loading ? 'Redirecting…' : 'Continue with Google'}
     </Button>
   )
 }
