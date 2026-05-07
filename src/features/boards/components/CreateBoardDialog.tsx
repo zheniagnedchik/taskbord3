@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useState } from 'react'
 
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -27,12 +29,15 @@ export function CreateBoardDialog({
   isPending = false,
   errorMessage = null,
 }: CreateBoardDialogProps) {
+  const { t } = useTranslation()
   const [title, setTitle] = useState('')
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- reset draft when dialog closes */
     if (!open) {
       setTitle('')
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [open])
 
   const trimmed = title.trim()
@@ -48,17 +53,17 @@ export function CreateBoardDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>New board</DialogTitle>
-          <DialogDescription>Give your board a title.</DialogDescription>
+          <DialogTitle>{t('boards.newBoard')}</DialogTitle>
+          <DialogDescription>{t('boards.newBoardDescription')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-2 py-2">
-            <Label htmlFor="new-board-title">Name</Label>
+            <Label htmlFor="new-board-title">{t('boards.name')}</Label>
             <Input
               id="new-board-title"
               name="title"
               autoComplete="off"
-              placeholder="My board"
+              placeholder={t('boards.boardPlaceholder')}
               value={title}
               disabled={isPending}
               onChange={(e) => setTitle(e.target.value)}
@@ -77,10 +82,10 @@ export function CreateBoardDialog({
               disabled={isPending}
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={!canSubmit || isPending}>
-              {isPending ? 'Creating…' : 'Create'}
+              {isPending ? t('boards.creating') : t('boards.create')}
             </Button>
           </DialogFooter>
         </form>

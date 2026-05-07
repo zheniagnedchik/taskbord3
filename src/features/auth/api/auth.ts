@@ -1,3 +1,4 @@
+import i18n from '@/i18n/i18n'
 import { supabase } from '@/lib/supabase/client'
 
 /** Where Supabase redirects after OAuth (must be listed under Authentication → URL Configuration). */
@@ -25,13 +26,13 @@ export async function signUpWithEmail(email: string, password: string) {
 export function formatAuthError(errorMessage: string): string {
   const m = errorMessage.toLowerCase()
   if (m.includes('invalid login credentials')) {
-    return 'Invalid email or password.'
+    return i18n.t('auth.errors.invalidCredentials')
   }
   if (m.includes('email not confirmed')) {
-    return 'Please confirm your email before signing in.'
+    return i18n.t('auth.errors.emailNotConfirmed')
   }
   if (m.includes('already registered') || m.includes('user already')) {
-    return 'An account with this email already exists.'
+    return i18n.t('auth.errors.alreadyRegistered')
   }
   return errorMessage
 }

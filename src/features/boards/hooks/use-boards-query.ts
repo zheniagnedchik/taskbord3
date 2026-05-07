@@ -29,6 +29,10 @@ export function useDeleteBoardMutation() {
     onSuccess: (_data, boardId) => {
       void queryClient.invalidateQueries({ queryKey: boardsQueryKey })
       void queryClient.invalidateQueries({ queryKey: ['board-sharing', boardId] })
+      void queryClient.invalidateQueries({ queryKey: ['board-columns', boardId] })
+      void queryClient.invalidateQueries({ queryKey: ['board-cards', boardId] })
+      void queryClient.removeQueries({ queryKey: ['board-columns', boardId] })
+      void queryClient.removeQueries({ queryKey: ['board-cards', boardId] })
     },
   })
 }

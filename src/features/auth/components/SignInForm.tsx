@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,9 +12,11 @@ import {
   signInWithEmail,
   signInWithGoogle,
 } from '@/features/auth/api/auth'
-import { signInSchema, type SignInValues } from '@/lib/validations/auth'
+import { createSignInSchema, type SignInValues } from '@/lib/validations/auth'
 
 export function SignInForm({ onSuccess }: { onSuccess: () => void }) {
+  const { t } = useTranslation()
+  const signInSchema = useMemo(() => createSignInSchema(t), [t])
   const [pending, setPending] = useState(false)
   const [googlePending, setGooglePending] = useState(false)
   const [googleError, setGoogleError] = useState<string | null>(null)
@@ -35,7 +38,7 @@ export function SignInForm({ onSuccess }: { onSuccess: () => void }) {
       ) : null}
       <GoogleAuthButton
         loading={googlePending}
-        aria-label="Continue with Google"
+        aria-label={t('auth.signInGoogleAria')}
         onContinue={async () => {
           setGoogleError(null)
           setGooglePending(true)
@@ -76,7 +79,7 @@ export function SignInForm({ onSuccess }: { onSuccess: () => void }) {
           <p className="text-sm text-destructive">{errors.root.message}</p>
         ) : null}
         <div className="space-y-2">
-          <Label htmlFor="sign-in-email">Email</Label>
+          <Label htmlFor="sign-in-email">{t('auth.email')}</Label>
           <Input
             id="sign-in-email"
             type="email"
@@ -90,7 +93,7 @@ export function SignInForm({ onSuccess }: { onSuccess: () => void }) {
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="sign-in-password">Password</Label>
+          <Label htmlFor="sign-in-password">{t('auth.password')}</Label>
           <Input
             id="sign-in-password"
             type="password"
@@ -104,7 +107,7 @@ export function SignInForm({ onSuccess }: { onSuccess: () => void }) {
           ) : null}
         </div>
         <Button type="submit" className="w-full" disabled={pending}>
-          {pending ? 'Signing in…' : 'Sign in'}
+          {pending ? t('auth.signingIn') : t('auth.signInSubmit')}
         </Button>
       </form>
     </div>

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +36,7 @@ type GoogleAuthButtonProps = {
   disabled?: boolean
   loading?: boolean
   title?: string
-  /** Screen reader label; visible text stays "Continue with Google". */
+  /** Screen reader label; visible text stays translated Continue with Google. */
   'aria-label'?: string
 }
 
@@ -45,6 +47,7 @@ export function GoogleAuthButton({
   title,
   'aria-label': ariaLabel,
 }: GoogleAuthButtonProps) {
+  const { t } = useTranslation()
   const busy = loading || disabled
   return (
     <Button
@@ -56,23 +59,24 @@ export function GoogleAuthButton({
       onClick={() => {
         if (!busy) onContinue?.()
       }}
-      aria-label={ariaLabel ?? 'Continue with Google'}
+      aria-label={ariaLabel ?? t('auth.continueGoogle')}
       aria-busy={loading}
     >
       <GoogleMark />
-      {loading ? 'Redirecting…' : 'Continue with Google'}
+      {loading ? t('auth.redirectingGoogle') : t('auth.continueGoogle')}
     </Button>
   )
 }
 
 export function AuthMethodDivider() {
+  const { t } = useTranslation()
   return (
     <div className="relative py-1">
       <div className="absolute inset-0 flex items-center" aria-hidden>
         <span className="w-full border-t border-border" />
       </div>
       <div className="relative flex justify-center text-xs">
-        <span className="bg-popover px-2 text-muted-foreground">or continue with email</span>
+        <span className="bg-popover px-2 text-muted-foreground">{t('auth.emailDivider')}</span>
       </div>
     </div>
   )

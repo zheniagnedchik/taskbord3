@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 
 import { Loader2, Plus, Settings, Trash2 } from 'lucide-react'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -25,12 +27,12 @@ const itemBaseClass =
 const activeItemClass =
   'bg-white/[0.08] text-foreground shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)] hover:bg-white/[0.1] hover:text-foreground'
 
-function mutationErrorMessage(error: unknown): string {
+function mutationErrorMessage(error: unknown, fallback: string): string {
   if (error && typeof error === 'object' && 'message' in error && typeof (error as { message: unknown }).message === 'string') {
     return (error as { message: string }).message
   }
   if (error instanceof Error) return error.message
-  return 'Could not create board.'
+  return fallback
 }
 
 const settingsIconButtonClass =
@@ -40,9 +42,11 @@ const deleteIconButtonClass =
   'shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
 
 export function BoardsSidebar() {
+  const { t } = useTranslation()
   const user = useAuthSession((s) => s.user)
   const currentUserId = user?.id
-  const [selectedId, setSelectedId] = useState<string>('')
+  const navigate = useNavigate()
+  const location = useLocation()
   const [createOpen, setCreateOpen] = useState(false)
   const [boardToDelete, setBoardToDelete] = useState<Board | null>(null)
   const [settingsBoard, setSettingsBoard] = useState<{
@@ -58,17 +62,18 @@ export function BoardsSidebar() {
 
   useEffect(() => {
     const list = data ?? []
-    if (!list.length) {
-      setSelectedId('')
-      return
-    }
-    setSelectedId((prev) => (prev && list.some((b) => b.id === prev) ? prev : list[0]!.id))
-  }, [data])
+    if (!list.length) return
+    if (!location.pathname.startsWith('/board/')) return
+    const match = /^\/board\/([^/]+)/.exec(location.pathname)
+    const routeBoardId = match?.[1]
+    if (routeBoardId && list.some((b) => b.id === routeBoardId)) return
+    void navigate(`/board/${list[0]!.id}`, { replace: true })
+  }, [data, location.pathname, navigate])
 
   async function handleCreateBoard(title: string) {
     try {
       const board = await createMutation.mutateAsync(title)
-      setSelectedId(board.id)
+      void navigate(`/board/${board.id}`)
       setCreateOpen(false)
     } catch (err) {
       console.error(err)
@@ -76,14 +81,21 @@ export function BoardsSidebar() {
   }
 
   const createError =
-    createMutation.isError && createMutation.error ? mutationErrorMessage(createMutation.error) : null
+    createMutation.isError && createMutation.error
+      ? mutationErrorMessage(createMutation.error, t('boards.createFailed'))
+      : null
 
   async function confirmDeleteBoard() {
     if (!boardToDelete) return
+    const deletedId = boardToDelete.id
     try {
-      await deleteMutation.mutateAsync(boardToDelete.id)
-      if (settingsBoard?.id === boardToDelete.id) setSettingsBoard(null)
+      await deleteMutation.mutateAsync(deletedId)
+      if (settingsBoard?.id === deletedId) setSettingsBoard(null)
       setBoardToDelete(null)
+      if (location.pathname === `/board/${deletedId}`) {
+        const remaining = boards.filter((b) => b.id !== deletedId)
+        void navigate(remaining[0] ? `/board/${remaining[0].id}` : '/dashboard', { replace: true })
+      }
     } catch (err) {
       console.error(err)
     }
@@ -99,7 +111,7 @@ export function BoardsSidebar() {
     >
       <div className="border-b border-white/[0.08] px-4 py-4">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-[13px] font-semibold tracking-tight text-white">Boards</h2>
+          <h2 className="text-[13px] font-semibold tracking-tight text-white">{t('boards.title')}</h2>
           <Button
             type="button"
             variant="outline"
@@ -109,35 +121,34 @@ export function BoardsSidebar() {
             onClick={() => setCreateOpen(true)}
           >
             <Plus className="size-3.5 shrink-0" aria-hidden />
-            Create board
+            {t('boards.createBoard')}
           </Button>
         </div>
       </div>
       <div className="flex flex-1 min-h-0 flex-col px-2 py-3">
-        <nav className="flex flex-1 min-h-0 flex-col gap-0.5 overflow-y-auto pb-4" aria-label="Boards">
+        <nav className="flex flex-1 min-h-0 flex-col gap-0.5 overflow-y-auto pb-4" aria-label={t('boards.navAria')}>
           {isPending ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-2 py-8 text-muted-foreground">
               <Loader2 className="size-6 animate-spin" aria-hidden />
-              <span className="text-xs">Loading boards…</span>
+              <span className="text-xs">{t('boards.loading')}</span>
             </div>
           ) : isError ? (
             <p className="px-2 text-sm text-destructive" role="alert">
-              {error instanceof Error ? error.message : 'Failed to load boards.'}
+              {error instanceof Error ? error.message : t('boards.loadFailed')}
             </p>
           ) : boards.length === 0 ? (
-            <p className="px-2 text-sm text-muted-foreground">No boards yet.</p>
+            <p className="px-2 text-sm text-muted-foreground">{t('boards.empty')}</p>
           ) : (
-            boards.map((board) => {
-              const selected = board.id === selectedId
-              return (
+            boards.map((board) => (
                 <div key={board.id} className="flex min-w-0 items-center gap-1">
-                  <button
-                    type="button"
-                    className={cn(itemBaseClass, 'min-w-0 flex-1', selected && activeItemClass)}
-                    onClick={() => setSelectedId(board.id)}
+                  <NavLink
+                    to={`/board/${board.id}`}
+                    className={({ isActive }) =>
+                      cn(itemBaseClass, 'min-w-0 flex-1', isActive && activeItemClass)
+                    }
                   >
                     <span className="line-clamp-2">{board.title}</span>
-                  </button>
+                  </NavLink>
                   {currentUserId === board.ownerId ? (
                     <div className="flex shrink-0 items-center gap-0.5">
                       <Button
@@ -145,7 +156,7 @@ export function BoardsSidebar() {
                         variant="ghost"
                         size="icon-sm"
                         className={settingsIconButtonClass}
-                        aria-label={`Board settings — ${board.title}`}
+                        aria-label={t('boards.settingsAria', { title: board.title })}
                         onClick={(e) => {
                           e.stopPropagation()
                           setSettingsBoard({
@@ -162,7 +173,7 @@ export function BoardsSidebar() {
                         variant="ghost"
                         size="icon-sm"
                         className={deleteIconButtonClass}
-                        aria-label={`Delete board — ${board.title}`}
+                        aria-label={t('boards.deleteAria', { title: board.title })}
                         onClick={(e) => {
                           e.stopPropagation()
                           setBoardToDelete(board)
@@ -175,8 +186,7 @@ export function BoardsSidebar() {
                     <span className="inline-flex h-7 w-[60px] shrink-0" aria-hidden />
                   )}
                 </div>
-              )
-            })
+              ))
           )}
         </nav>
       </div>
@@ -210,10 +220,11 @@ export function BoardsSidebar() {
       >
         <DialogContent showCloseButton className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>Delete this board?</DialogTitle>
+            <DialogTitle>{t('boards.deleteTitle')}</DialogTitle>
             <DialogDescription>
-              This cannot be undone. Members will lose access.{' '}
-              <span className="font-medium text-foreground">{boardToDelete?.title ?? ''}</span> will be removed.
+              {t('boards.deleteDescriptionPrefix')}{' '}
+              <span className="font-medium text-foreground">{boardToDelete?.title ?? ''}</span>{' '}
+              {t('boards.deleteDescriptionSuffix')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-2">
@@ -223,7 +234,7 @@ export function BoardsSidebar() {
               disabled={deleteMutation.isPending}
               onClick={() => setBoardToDelete(null)}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="button"
@@ -231,7 +242,7 @@ export function BoardsSidebar() {
               disabled={deleteMutation.isPending}
               onClick={() => void confirmDeleteBoard()}
             >
-              {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+              {deleteMutation.isPending ? t('common.deleting') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -7,11 +7,13 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useAuthModal } from '@/stores/auth-modal'
+import { useTranslation } from 'react-i18next'
 
 import { SignInForm } from './SignInForm'
 import { SignUpForm } from './SignUpForm'
 
 export function AuthDialog() {
+  const { t } = useTranslation()
   const mode = useAuthModal((s) => s.mode)
   const close = useAuthModal((s) => s.close)
   const openSignIn = useAuthModal((s) => s.openSignIn)
@@ -28,11 +30,9 @@ export function AuthDialog() {
     >
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>{mode === 'sign-up' ? 'Sign up' : 'Sign in'}</DialogTitle>
+          <DialogTitle>{mode === 'sign-up' ? t('auth.signUpTitle') : t('auth.signInTitle')}</DialogTitle>
           <DialogDescription>
-            {mode === 'sign-up'
-              ? 'Create an account to sync your boards.'
-              : 'Enter your credentials to continue.'}
+            {mode === 'sign-up' ? t('auth.signUpDescription') : t('auth.signInDescription')}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -45,26 +45,26 @@ export function AuthDialog() {
           <p className="text-center text-sm text-muted-foreground">
             {mode === 'sign-in' ? (
               <>
-                No account?{' '}
+                {t('auth.noAccount')}{' '}
                 <Button
                   type="button"
                   variant="link"
                   className="h-auto p-0 text-primary"
                   onClick={() => openSignUp()}
                 >
-                  Sign up
+                  {t('auth.signUpLink')}
                 </Button>
               </>
             ) : mode === 'sign-up' ? (
               <>
-                Already have an account?{' '}
+                {t('auth.hasAccount')}{' '}
                 <Button
                   type="button"
                   variant="link"
                   className="h-auto p-0 text-primary"
                   onClick={() => openSignIn()}
                 >
-                  Sign in
+                  {t('auth.signInLink')}
                 </Button>
               </>
             ) : null}

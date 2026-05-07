@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,9 +12,11 @@ import {
   signInWithGoogle,
   signUpWithEmail,
 } from '@/features/auth/api/auth'
-import { signUpSchema, type SignUpValues } from '@/lib/validations/auth'
+import { createSignUpSchema, type SignUpValues } from '@/lib/validations/auth'
 
 export function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
+  const { t } = useTranslation()
+  const signUpSchema = useMemo(() => createSignUpSchema(t), [t])
   const [pending, setPending] = useState(false)
   const [googlePending, setGooglePending] = useState(false)
   const [googleError, setGoogleError] = useState<string | null>(null)
@@ -37,7 +40,7 @@ export function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
       ) : null}
       <GoogleAuthButton
         loading={googlePending}
-        aria-label="Sign up with Google"
+        aria-label={t('auth.signUpGoogleAria')}
         onContinue={async () => {
           setGoogleError(null)
           setGooglePending(true)
@@ -71,9 +74,7 @@ export function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
               onSuccess()
               return
             }
-            setEmailConfirmationNotice(
-              'Check your email to confirm your account before signing in.',
-            )
+            setEmailConfirmationNotice(t('auth.emailConfirmNotice'))
           } finally {
             setPending(false)
           }
@@ -87,7 +88,7 @@ export function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
           <p className="text-sm text-muted-foreground">{emailConfirmationNotice}</p>
         ) : null}
         <div className="space-y-2">
-          <Label htmlFor="sign-up-email">Email</Label>
+          <Label htmlFor="sign-up-email">{t('auth.email')}</Label>
           <Input
             id="sign-up-email"
             type="email"
@@ -101,7 +102,7 @@ export function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="sign-up-password">Password</Label>
+          <Label htmlFor="sign-up-password">{t('auth.password')}</Label>
           <Input
             id="sign-up-password"
             type="password"
@@ -115,7 +116,7 @@ export function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="sign-up-confirm">Confirm password</Label>
+          <Label htmlFor="sign-up-confirm">{t('auth.confirmPassword')}</Label>
           <Input
             id="sign-up-confirm"
             type="password"
@@ -129,7 +130,7 @@ export function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
           ) : null}
         </div>
         <Button type="submit" className="w-full" disabled={pending}>
-          {pending ? 'Creating account…' : 'Create account'}
+          {pending ? t('auth.creatingAccount') : t('auth.createAccount')}
         </Button>
       </form>
     </div>
