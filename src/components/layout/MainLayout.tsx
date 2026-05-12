@@ -13,7 +13,6 @@ import { useAuthSession } from '@/stores/auth-session'
 const navLinkDefs = [
   { to: '/dashboard', labelKey: 'nav.dashboard' as const },
   { to: '/board', labelKey: 'nav.board' as const },
-  { to: '/settings', labelKey: 'nav.settings' as const },
 ] as const
 
 const ghostNavButtonClass =
