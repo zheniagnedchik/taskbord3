@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { AuthMethodDivider, GoogleAuthButton } from '@/features/auth/components/GoogleAuthButton'
@@ -106,9 +105,9 @@ export function SignInForm({ onSuccess }: { onSuccess: () => void }) {
             <p className="text-sm text-destructive">{errors.password.message}</p>
           ) : null}
         </div>
-        <Button type="submit" className="w-full" disabled={pending}>
+        {/* <Button type="submit" className="w-full" disabled={pending}>
           {pending ? t('auth.signingIn') : t('auth.signInSubmit')}
-        </Button>
+        </Button> */}
       </form>
     </div>
   )
