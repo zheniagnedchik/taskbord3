@@ -139,7 +139,26 @@
     "deleteCardSuffix": "will be removed.",
     "deleteColumnTitle": "Delete this column?",
     "deleteColumnPrefix": "This cannot be undone. All cards in this column will be permanently removed. Column",
-    "deleteColumnSuffix": "will be deleted."
+    "deleteColumnSuffix": "will be deleted.",
+    "breakdown": {
+      "title": "Break down a task",
+      "description": "Send a task to AI; subtasks will be added as cards in the column you choose.",
+      "targetColumn": "Add cards to column",
+      "noColumnsOption": "No columns",
+      "noColumnsHint": "Add a column first to create cards from a breakdown.",
+      "taskLabel": "Task to break down",
+      "taskPlaceholder": "Describe the task…",
+      "send": "Break down and add cards",
+      "sending": "Working…",
+      "noItems": "The service returned no subtasks. Try rephrasing your task.",
+      "errors": {
+        "generic": "Could not break down the task.",
+        "network": "Network error. Check your connection and try again.",
+        "invalidJson": "The service returned invalid data.",
+        "invalidShape": "The service response did not include the expected list of items.",
+        "http": "The service returned an error (HTTP {{status}})."
+      }
+    }
   },
   "pages": {
     "dashboardTitle": "Dashboard",

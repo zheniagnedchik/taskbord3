@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom'
 
 import { useBoardSharingQuery } from '@/features/boards/hooks/use-board-sharing'
 import { useBoardsQuery } from '@/features/boards/hooks/use-boards-query'
+import { BoardBreakdownChat } from '@/features/columns/components/BoardBreakdownChat'
 import { BoardColumnsBar } from '@/features/columns/components/BoardColumnsBar'
 import { CardFormDialog, type CardAssigneeOption, type CardFormDialogMode } from '@/features/columns/components/CardFormDialog'
 import {
@@ -352,17 +353,20 @@ export function BoardPage() {
           <Loader2 className="size-7 animate-spin" aria-label={t('board.loadingCards')} />
         </div>
       ) : (
-        <BoardColumnsBar
-          columns={columns}
-          cards={columnCards}
-          onAdd={openCreate}
-          onEdit={openEdit}
-          onDeleteColumn={requestDeleteColumn}
-          onAddCard={openCardForm}
-          onEditCard={openEditCard}
-          onDeleteCard={requestDeleteCard}
-          onDragEnd={handleDragEnd}
-        />
+        <div className="space-y-6">
+          <BoardBreakdownChat boardId={boardId} columns={columns} />
+          <BoardColumnsBar
+            columns={columns}
+            cards={columnCards}
+            onAdd={openCreate}
+            onEdit={openEdit}
+            onDeleteColumn={requestDeleteColumn}
+            onAddCard={openCardForm}
+            onEditCard={openEditCard}
+            onDeleteCard={requestDeleteCard}
+            onDragEnd={handleDragEnd}
+          />
+        </div>
       )}
 
       <ColumnFormDialog
